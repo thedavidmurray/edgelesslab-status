@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edgeless Status</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 2rem; }
+    .card { max-width: 480px; width: 100%; background: #141414; border: 1px solid #222; border-radius: 12px; padding: 2rem; text-align: center; }
+    .state { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .state.ok { color: #3fb950; }
+    .state.degraded { color: #d29922; }
+    .updated { font-size: 0.85rem; color: #888; margin-top: 1rem; }
+    .note { font-size: 0.8rem; color: #666; margin-top: 1.5rem; line-height: 1.5; }
+    a { color: #58a6ff; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="state" id="state">Loading…</div>
+    <div class="updated" id="updated"></div>
+    <div class="note">
+      This page is intentionally hosted on GitHub Pages (Fastly edge + GitHub DNS),
+      independent of Cloudflare. If you can see this, Edgeless services are reachable.<br>
+      <a href="status.json">Raw status JSON</a>
+    </div>
+  </div>
+  <script>
+    fetch('status.json').then(r => r.json()).then(d => {
+      document.getElementById('state').textContent = d.message;
+      document.getElementById('state').className = 'state ' + (d.state === 'ok' ? 'ok' : 'degraded');
+      document.getElementById('updated').textContent = 'Last updated: ' + d.updated_at;
+    }).catch(() => {
+      document.getElementById('state').textContent = 'Cloudflare outage — Edgeless services degraded, stand-in mode';
+      document.getElementById('state').className = 'state degraded';
+      document.getElementById('updated').textContent = 'Last updated: ' + new Date().toISOString();
+    });
+  </script>
+</body>
+</html>
